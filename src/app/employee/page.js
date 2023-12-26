@@ -18,7 +18,7 @@ export default function Home() {
     <Auth>
       <main>
         <Container>
-          <h1>Home page</h1>
+          <h1>Employee</h1>
           <button onClick={logout}>Logout</button>
         </Container>
       </main>
