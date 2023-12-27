@@ -1,8 +1,7 @@
 "use client";
-
-import { Container } from "react-bootstrap";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import AdminDashboard from "@/components/Dashboard/AdminDashboard";
 
 export default function Home() {
   const router = useRouter();
@@ -16,10 +15,7 @@ export default function Home() {
   };
   return (
     <main>
-      <Container>
-        <h1>Administrator</h1>
-        <button onClick={logout}>Logout</button>
-      </Container>
+      <AdminDashboard />
     </main>
   );
 }

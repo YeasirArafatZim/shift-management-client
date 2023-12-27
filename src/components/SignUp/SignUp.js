@@ -94,7 +94,7 @@ const SignUp = () => {
             id="name"
             name="name"
             placeholder="Name"
-            value={formData.lname}
+            value={formData.name}
             onChange={handleChange}
             required
           />

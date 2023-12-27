@@ -1,5 +1,6 @@
 import Auth from "@/components/Auth/Auth";
 import AdminAuth from "@/components/Auth/AdminAuth";
+import AdminNav from "@/components/Navbar/AdminNav.js";
 
 export const metadata = {
   title: "Administrator",
@@ -8,10 +9,15 @@ export const metadata = {
 
 export default function AdminLayout({ children }) {
   return (
-    <Auth>
-      <AdminAuth>
-        <div>{children}</div>
-      </AdminAuth>
-    </Auth>
+    <>
+      <Auth>
+        <AdminAuth>
+          <div>
+            <AdminNav />
+          </div>
+          <div style={{ paddingTop: "50px" }}>{children}</div>
+        </AdminAuth>
+      </Auth>
+    </>
   );
 }

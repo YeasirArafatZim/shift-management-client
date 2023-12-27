@@ -1,0 +1,13 @@
+.flexCont {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.flexCont > div {
+  background-color: #f1f1f1;
+  width: 400px;
+  min-height: 250px;
+  margin: 10px;
+  text-align: center;
+  line-height: 75px;
+}
