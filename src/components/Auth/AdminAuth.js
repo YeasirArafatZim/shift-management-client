@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-const Auth = ({ children }) => {
+const AdminAuth = ({ children }) => {
   const [isAuth, setIsAuth] = useState(false);
   const router = useRouter();
 
   const checkAuth = async () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth`, {
+      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/adminauth`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -27,4 +27,4 @@ const Auth = ({ children }) => {
 
   return isAuth ? <>{children}</> : null;
 };
-export default Auth;
+export default AdminAuth;

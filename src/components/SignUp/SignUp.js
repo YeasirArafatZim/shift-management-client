@@ -66,7 +66,7 @@ const SignUp = () => {
         .post(`${process.env.NEXT_PUBLIC_SERVER_URL}/register`, formData)
         .then((res) => {
           setFormData(initialState);
-          router.push("/login");
+          router.push("/");
         })
         .catch((e) => {
           if (e.response.data == "Email Already exists") {

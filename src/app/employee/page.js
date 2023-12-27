@@ -11,7 +11,7 @@ export default function Home() {
       .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/logout`, {
         withCredentials: true,
       })
-      .then((res) => router.push("/login"))
+      .then((res) => router.push("/"))
       .catch((e) => console.log(e));
   };
   return (
