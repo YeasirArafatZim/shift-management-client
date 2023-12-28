@@ -21,7 +21,9 @@ export default function Shift() {
 
   const fetchShift = () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/shift`)
+      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/shift`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setShifts(res.data);
       })

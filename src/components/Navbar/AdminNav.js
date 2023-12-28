@@ -69,7 +69,8 @@ function AdminNav() {
     axios
       .patch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${user._id}`,
-        profileData
+        profileData,
+        { withCredentials: true }
       )
       .then((res) => setUpStatus(true))
       .catch((e) => console.log(e));
@@ -95,7 +96,8 @@ function AdminNav() {
           axios
             .patch(
               `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${user._id}`,
-              { password: passData.newPass }
+              { password: passData.newPass },
+              { withCredentials: true }
             )
             .then((res) => setUpStatus(true))
             .catch((e) => console.log(e));

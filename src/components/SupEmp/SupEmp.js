@@ -145,9 +145,13 @@ export default function SupEmp() {
   const handleSubmit = () => {
     if (userStatus != "") {
       axios
-        .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
-          status: userStatus,
-        })
+        .patch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`,
+          {
+            status: userStatus,
+          },
+          { withCredentials: true }
+        )
         .then((res) => closeUpdateModal())
         .catch((e) => console.log(e));
     }

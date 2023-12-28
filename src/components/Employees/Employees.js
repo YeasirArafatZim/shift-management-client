@@ -26,7 +26,9 @@ export default function Employees() {
 
   const fetchEmployee = () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee`)
+      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setEmployees(res.data);
         setFilterEmp(res.data);
@@ -52,7 +54,9 @@ export default function Employees() {
 
   const delEmp = (id) => {
     axios
-      .delete(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${id}`)
+      .delete(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${id}`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setEmployees((prev) => prev.filter((emp) => emp._id !== id));
         setFilterEmp((prev) => prev.filter((emp) => emp._id !== id));
@@ -146,25 +150,37 @@ export default function Employees() {
   const handleSubmit = () => {
     if (userRole != "") {
       axios
-        .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
-          role: userRole,
-        })
+        .patch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`,
+          {
+            role: userRole,
+          },
+          { withCredentials: true }
+        )
         .then((res) => closeUpdateModal())
         .catch((e) => console.log(e));
     }
     if (userStatus != "") {
       axios
-        .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
-          status: userStatus,
-        })
+        .patch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`,
+          {
+            status: userStatus,
+          },
+          { withCredentials: true }
+        )
         .then((res) => closeUpdateModal())
         .catch((e) => console.log(e));
     }
     if (selSup != "") {
       axios
-        .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
-          supervisor: selSup,
-        })
+        .patch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`,
+          {
+            supervisor: selSup,
+          },
+          { withCredentials: true }
+        )
         .then((res) => closeUpdateModal())
         .catch((e) => console.log(e));
     }
