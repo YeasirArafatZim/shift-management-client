@@ -1,5 +1,5 @@
 "use client";
-import styles from "./Employees.module.css";
+import styles from "./SupEmp.module.css";
 import { Dropdown } from "react-bootstrap";
 import { IoSearchOutline } from "react-icons/io5";
 import { CgMoreVerticalO } from "react-icons/cg";
@@ -8,69 +8,47 @@ import { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-export default function Employees() {
+export default function SupEmp() {
   const [employees, setEmployees] = useState([]);
-  const [supervisors, setSupervisors] = useState([]);
   const [filterEmp, setFilterEmp] = useState(employees);
-  const [filter, setFilter] = useState({
-    userRole: "",
-    status: "",
-  });
   const [updateModal, setUpdateModal] = useState(false);
+  const [shiftModal, setShiftModal] = useState(false);
+  const [upShiftModal, setUpShiftModal] = useState(false);
   const [upEmp, setUpEmp] = useState({});
-  const [userRole, setUserRole] = useState("");
   const [userStatus, setUserStatus] = useState("");
-  const [selSup, setSelSup] = useState({ id: "", name: "" });
-  const categories = ["Administrator", "Supervisor", "Employee"];
+  const [shifts, setShifts] = useState([]);
   const status = ["Active", "Pending"];
+  const [selShift, setSelShift] = useState("");
+  const [date, setDate] = useState("");
+  const [dpErr, setDpErr] = useState(false);
+  const [empShift, setEmpShift] = useState({});
 
   const fetchEmployee = () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee`)
+      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/allemp`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setEmployees(res.data);
         setFilterEmp(res.data);
       })
       .catch((e) => console.log(e));
   };
-
-  const getSupervisors = () => {
+  const fetchShift = () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/getsups`, {
+      .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/shift`, {
         withCredentials: true,
       })
       .then((res) => {
-        setSupervisors(res.data);
+        setShifts(res.data);
       })
       .catch((e) => console.log(e));
   };
 
   useEffect(() => {
     fetchEmployee();
-    getSupervisors();
+    fetchShift();
   }, []);
-
-  const delEmp = (id) => {
-    axios
-      .delete(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${id}`)
-      .then((res) => {
-        setEmployees((prev) => prev.filter((emp) => emp._id !== id));
-        setFilterEmp((prev) => prev.filter((emp) => emp._id !== id));
-      })
-      .catch((e) => console.log(e));
-  };
-  const delSup = (id) => {
-    axios
-      .patch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/delempsup/${id}`,
-        {},
-        { withCredentials: true }
-      )
-      .then((res) => {
-        fetchEmployee();
-      })
-      .catch((e) => console.log(e));
-  };
 
   const searchByName = (e) => {
     let searchValue = e.target.value;
@@ -84,29 +62,11 @@ export default function Employees() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleFilter = (e) => {
     e.preventDefault();
-    const { name, value } = e.target;
-    setFilter((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const handleFilter = () => {
-    if (filter.userRole != "" && filter.status != "") {
-      const filEmp = employees.filter(
-        (emp) => emp.role == filter.userRole && emp.status == filter.status
-      );
-      console.log(1);
+    if (e.target.value != "") {
+      const filEmp = employees.filter((emp) => emp.status == e.target.value);
       setFilterEmp(filEmp);
-    } else if (filter.userRole != "") {
-      const filEmp = employees.filter((emp) => emp.role == filter.userRole);
-      setFilterEmp(filEmp);
-      console.log(2);
-    } else if (filter.status != "") {
-      const filEmp = employees.filter((emp) => emp.status == filter.status);
-      setFilterEmp(filEmp);
-      console.log(3);
     } else {
       setFilterEmp(employees);
     }
@@ -120,38 +80,69 @@ export default function Employees() {
   const closeUpdateModal = () => {
     setUpdateModal(false);
     setUpEmp({});
-    setUserRole("");
     setUserStatus("");
     fetchEmployee();
-    getSupervisors();
+  };
+  const openShiftModal = (id) => {
+    setShiftModal(true);
+    const result = filterEmp.find((item) => item._id === id);
+    setUpEmp(result);
+  };
+  const closeShiftModal = () => {
+    setShiftModal(false);
+    setUpEmp({});
+    setDate("");
+    setSelShift("");
+    fetchEmployee();
+    setDpErr(false);
+  };
+
+  const openUpShiftModal = (id) => {
+    setUpShiftModal(true);
+    const result = filterEmp.find((item) => item._id === id);
+    setUpEmp(result);
+  };
+  const closeUpShiftModal = () => {
+    setUpShiftModal(false);
+    setUpEmp({});
+    setDate("");
+    setSelShift("");
+    fetchEmployee();
+    setDpErr(false);
+    setEmpShift({});
   };
 
   const handleStatus = (e) => {
     e.preventDefault();
     setUserStatus(e.target.value);
   };
-
-  const handleRole = (e) => {
+  const handleShift = (e) => {
     e.preventDefault();
-    setUserRole(e.target.value);
+    setSelShift(e.target.value);
+    setDpErr(false);
   };
-  const handleSup = (e) => {
+  const handleDate = (e) => {
     e.preventDefault();
-    setSelSup({
-      id: e.target.value,
-      name: e.target.options[e.target.selectedIndex].getAttribute("name"),
-    });
+    setDate(e.target.value);
+    setDpErr(false);
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/getEmpShift`,
+        {
+          empId: upEmp._id,
+          date: new Date(e.target.value),
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        setEmpShift(res.data.shiftId);
+      })
+      .catch((e) => console.log(e));
   };
 
   const handleSubmit = () => {
-    if (userRole != "") {
-      axios
-        .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
-          role: userRole,
-        })
-        .then((res) => closeUpdateModal())
-        .catch((e) => console.log(e));
-    }
     if (userStatus != "") {
       axios
         .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
@@ -160,14 +151,35 @@ export default function Employees() {
         .then((res) => closeUpdateModal())
         .catch((e) => console.log(e));
     }
-    if (selSup != "") {
-      axios
-        .patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${upEmp._id}`, {
-          supervisor: selSup,
-        })
-        .then((res) => closeUpdateModal())
-        .catch((e) => console.log(e));
-    }
+  };
+
+  const handleShiftSubmit = () => {
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/assignshift`,
+        {
+          empId: upEmp._id,
+          shiftId: selShift,
+          date: new Date(date),
+        },
+        { withCredentials: true }
+      )
+      .then((res) => closeShiftModal())
+      .catch((e) => setDpErr(true));
+  };
+  const handleShiftUpdate = () => {
+    axios
+      .patch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/updateEmpShift`,
+        {
+          empId: upEmp._id,
+          shiftId: selShift,
+          date: new Date(date),
+        },
+        { withCredentials: true }
+      )
+      .then((res) => closeUpShiftModal())
+      .catch((e) => setDpErr(true));
   };
 
   const renderStatus = (status) => {
@@ -193,53 +205,11 @@ export default function Employees() {
       );
     }
   };
-  const renderSup = (role, sup_id) => {
-    if (role == "Employee") {
-      return (
-        <label>
-          Supervisor:
-          <select defaultValue={sup_id} onChange={handleSup}>
-            <option value="">--select--</option>
-            {supervisors.map((sup) => (
-              <option key={sup._id} value={sup._id} name={sup.name}>
-                {sup.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      );
-    }
-  };
 
   return (
     <div className="container pt-3">
       {/* Filtering  */}
       <div className="row mt-2 mr-1">
-        <div className="col">
-          <p
-            style={{
-              fontSize: "16px",
-              margin: 0,
-              color: "black",
-            }}
-          >
-            Role
-          </p>
-          <select
-            name="userRole"
-            id="userRole"
-            className={styles.drop_down}
-            onChange={handleChange}
-          >
-            <option value="">All</option>
-            {categories.map((cat, i) => (
-              <option key={i} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <div className="col mx-2">
           <p
             style={{
@@ -254,7 +224,7 @@ export default function Employees() {
             name="status"
             id="status"
             className={styles.drop_down}
-            onChange={handleChange}
+            onChange={handleFilter}
           >
             <option value="">All</option>
             {status.map((x, i) => (
@@ -263,20 +233,6 @@ export default function Employees() {
               </option>
             ))}
           </select>
-        </div>
-
-        <div
-          className="col pr-0"
-          style={{
-            marginTop: "25px",
-          }}
-        >
-          <input
-            type="button"
-            className={`btn ${styles.btn_custom} ${styles.btnList}`}
-            onClick={handleFilter}
-            value="Filter"
-          />
         </div>
       </div>
       {/* Search  */}
@@ -314,18 +270,12 @@ export default function Employees() {
                 {" "}
                 Mobile
               </th>
-              <th scope="col" className={styles.table_header}>
-                {" "}
-                Role{" "}
-              </th>
+
               <th scope="col" className={styles.table_header}>
                 {" "}
                 Status{" "}
               </th>
-              <th scope="col" className={styles.table_header}>
-                {" "}
-                Supervisor{" "}
-              </th>
+
               <th scope="col" className={styles.table_header}>
                 {" "}
                 Actions{" "}
@@ -350,11 +300,7 @@ export default function Employees() {
                 </td>
                 <td align="center">{x.phone}</td>
 
-                <td align="center">{x.role}</td>
-
                 {renderStatus(x.status)}
-
-                <td align="center"> {x?.supervisor?.name}</td>
 
                 <td align="center">
                   <Dropdown className="mr-3">
@@ -377,16 +323,16 @@ export default function Employees() {
                       <Dropdown.Item
                         href="#"
                         className={styles.drop}
-                        onClick={() => delSup(x._id)}
+                        onClick={() => openShiftModal(x._id)}
                       >
-                        Remove Supervior
+                        Assign Shift
                       </Dropdown.Item>
                       <Dropdown.Item
                         href="#"
                         className={styles.drop}
-                        onClick={() => delEmp(x._id)}
+                        onClick={() => openUpShiftModal(x._id)}
                       >
-                        Delete Employee
+                        Update Shift
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
@@ -405,22 +351,12 @@ export default function Employees() {
         <Modal.Body>
           <div className={styles.update}>
             <label>
-              Role:
-              <select defaultValue={upEmp.role} onChange={handleRole}>
-                <option value="Administrator">Administrator</option>
-                <option value="Supervisor">Supervisor</option>
-                <option value="Employee">Employee</option>
-              </select>
-            </label>
-            <label>
               Status:
               <select defaultValue={upEmp.status} onChange={handleStatus}>
                 <option value="Active">Active</option>
                 <option value="Pending">Pending</option>
               </select>
             </label>
-
-            {renderSup(upEmp.role, upEmp.supervisor?.id)}
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -428,6 +364,96 @@ export default function Employees() {
             Close
           </Button>
           <Button variant="primary" onClick={handleSubmit}>
+            Update
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Shift Modal  */}
+      <Modal show={shiftModal} onHide={closeShiftModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Assign Shift</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p
+            style={{
+              color: "red",
+              display: dpErr ? "block" : "none",
+              marginLeft: "15px",
+            }}
+          >
+            Already assigned in this day
+          </p>
+          <div className={styles.update}>
+            <label>
+              Date:
+              <input
+                type="date"
+                name="date"
+                value={date}
+                onChange={handleDate}
+                style={{ border: dpErr ? "1px solid red" : "" }}
+              />
+            </label>
+
+            <label>
+              Assign Shift:
+              <select defaultValue="" onChange={handleShift}>
+                <option value="">--select--</option>
+                {shifts.map((shift) => (
+                  <option key={shift._id} value={shift._id}>
+                    {shift.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeShiftModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleShiftSubmit}>
+            Add
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Update Shift  */}
+      <Modal show={upShiftModal} onHide={closeUpShiftModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Shift</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className={styles.update}>
+            <label>
+              Date:
+              <input
+                type="date"
+                name="date"
+                value={date}
+                onChange={handleDate}
+              />
+            </label>
+            {empShift?._id ? (
+              <label>
+                Assign Shift:
+                <select defaultValue={empShift._id} onChange={handleShift}>
+                  {shifts.map((shift) => (
+                    <option key={shift._id} value={shift._id}>
+                      {shift.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeUpShiftModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleShiftUpdate}>
             Update
           </Button>
         </Modal.Footer>

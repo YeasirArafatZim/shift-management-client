@@ -10,7 +10,7 @@ import Button from "react-bootstrap/Button";
 import { useState, useEffect } from "react";
 import styles from "./AdminNav.module.css";
 
-function AdminNav() {
+function SuperNav() {
   const router = useRouter();
   const [profileModal, setProfileModal] = useState(false);
   const [passModal, setPassModal] = useState(false);
@@ -146,7 +146,7 @@ function AdminNav() {
         data-bs-theme="dark"
       >
         <Container fluid>
-          <Navbar.Brand href="/admin">Admin Panel</Navbar.Brand>
+          <Navbar.Brand href="/admin">Supervisor Panel</Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav
@@ -329,4 +329,4 @@ function AdminNav() {
   );
 }
 
-export default AdminNav;
+export default SuperNav;
