@@ -95,11 +95,18 @@ function AdminNav() {
         .then((res) => {
           axios
             .patch(
-              `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${user._id}`,
+              `${process.env.NEXT_PUBLIC_SERVER_URL}/passupdate/${user._id}`,
               { password: passData.newPass },
               { withCredentials: true }
             )
-            .then((res) => setUpStatus(true))
+            .then((res) => {
+              closePassModal();
+              setPassData({
+                oldPass: "",
+                newPass: "",
+                conPass: "",
+              });
+            })
             .catch((e) => console.log(e));
         })
         .catch((e) =>

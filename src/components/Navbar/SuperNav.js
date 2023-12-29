@@ -95,11 +95,18 @@ function SuperNav() {
         .then((res) => {
           axios
             .patch(
-              `${process.env.NEXT_PUBLIC_SERVER_URL}/employee/${user._id}`,
+              `${process.env.NEXT_PUBLIC_SERVER_URL}/passupdate/${user._id}`,
               { password: passData.newPass },
               { withCredentials: true }
             )
-            .then((res) => setUpStatus(true))
+            .then((res) => {
+              closePassModal();
+              setPassData({
+                oldPass: "",
+                newPass: "",
+                conPass: "",
+              });
+            })
             .catch((e) => console.log(e));
         })
         .catch((e) =>
@@ -148,7 +155,7 @@ function SuperNav() {
         data-bs-theme="dark"
       >
         <Container fluid>
-          <Navbar.Brand href="/admin">Supervisor Panel</Navbar.Brand>
+          <Navbar.Brand href="/supervisor">Supervisor Panel</Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav
@@ -156,19 +163,7 @@ function SuperNav() {
               style={{ maxHeight: "100px" }}
               navbarScroll
             >
-              <Nav.Link href="/admin/employee">Employees</Nav.Link>
-
-              <Nav.Link href="/admin/shift">Shift</Nav.Link>
-              {/* <NavDropdown title="Link" id="navbarScrollingDropdown">
-                <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-                <NavDropdown.Item href="#action4">
-                  Another action
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="#action5">
-                  Something else here
-                </NavDropdown.Item>
-              </NavDropdown> */}
+              <Nav.Link href="/supervisor/shift">Shift Load</Nav.Link>
             </Nav>
             <div className="me-4">
               <NavDropdown

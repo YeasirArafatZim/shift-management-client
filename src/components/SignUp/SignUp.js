@@ -196,7 +196,7 @@ const SignUp = () => {
             }}
             style={{ border: error.pass ? "1px solid red" : "" }}
           />
-          <p className={styles.subBtn} onClick={() => router.push("/login")}>
+          <p className={styles.subBtn} onClick={() => router.push("/")}>
             Already have a account?
           </p>
           <button className={styles.button} type="submit">

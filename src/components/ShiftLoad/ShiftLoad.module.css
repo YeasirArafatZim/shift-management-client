@@ -64,17 +64,3 @@
   display: flex;
   justify-content: space-around;
 }
-.title {
-  height: 48px;
-  width: 100%;
-  border: 1px solid #999999;
-  border-radius: 5px;
-  color: #4d4545;
-  font-weight: bold;
-  font-size: 20px;
-  margin-top: 15px;
-  margin-bottom: 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
